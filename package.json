@@ -16,5 +16,11 @@
   },
   "dependencies": {
     "htmlparser2": "^3.9.0"
-  }
+  },
+  "repository": {
+    "url": "https://github.com/nyrkovalex/ts-html-sanitizer"
+  },
+  "keywords": [
+    "sanitize", "html", "sanitizer", "cleanup"
+  ]
 }

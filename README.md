@@ -4,7 +4,7 @@ Extendable HTML sanitizer written in typescript on top of [htmlparser2](https://
 suitable for both JS and TS projects
 
 ## Usage
-```javascript
+```typescript
 import * as s from 'ts-html-sanitizer'; // for TS users
 // let s = require('ts-html-sanitizer'); // for JS users
 
