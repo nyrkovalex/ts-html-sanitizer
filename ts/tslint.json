@@ -1,0 +1,34 @@
+{
+  "rules": {
+    "quotemark": [
+      "single"
+    ],
+    "semicolon": [
+      "always"
+    ],
+    "use-strict": [
+      true
+    ],
+    "indent": [
+      "spaces"
+    ],
+    "class-name": true,
+    "eofline": true,
+    "curly": true,
+    "max-line-length": [
+      100
+    ],
+    "no-console": [
+      true
+    ],
+    "triple-equals": true,
+    "no-var-requires": true,
+    "no-use-before-declare": true,
+    "no-unused-variable": true,
+    "no-unreachable": true,
+    "no-trailing-whitespace": true,
+    "no-shadowed-variable": true,
+    "no-require-imports": true,
+    "no-debugger": true
+  }
+}

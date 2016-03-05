@@ -1,0 +1,20 @@
+{
+  "name": "ts-html-sanitizer",
+  "version": "0.1.0",
+  "description": "Extendable HTML sanitizer for typescript and JS projects",
+  "main": "js/src/sanitizer.js",
+  "scripts": {
+     "test": "mocha --require source-map-support/register --recursive ./js/"
+  },
+  "typings": "js/src/sanitizer",
+  "author": "nyrkovalex@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "source-map-support": "^0.4.0"
+  },
+  "dependencies": {
+    "htmlparser2": "^3.9.0"
+  }
+}

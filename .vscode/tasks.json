@@ -1,0 +1,79 @@
+{
+  "version": "0.1.0",
+  "windows": {
+    "command": "cmd",
+    "args": [
+      "/C"
+    ],
+    "isShellCommand": true,
+    "showOutput": "silent",
+    "tasks": [
+      {
+        "taskName": "build",
+        "suppressTaskName": true,
+        "isBuildCommand": true,
+        "args": [
+          "tsc",
+          "-p",
+          "./ts"
+        ],
+        "problemMatcher": "$tsc"
+      },
+      {
+        "taskName": "test",
+        "suppressTaskName": true,
+        "isTestCommand": true,
+        "args": [
+          "mocha",
+          "--recursive",
+          "./js/tests"
+        ]
+      },
+      {
+        "taskName": "clean",
+        "suppressTaskName": true,
+        "args": [
+          "rd",
+          "/s",
+          "/q",
+          "server\\js",
+          "web\\js"
+        ]
+      }
+    ]
+  },
+  "linux": {
+    "command": "sh",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "args": [
+      "-c"
+    ],
+    "tasks": [
+      {
+        "taskName": "build",
+        "suppressTaskName": true,
+        "isBuildCommand": true,
+        "args": [
+          "tsc -p ./ts"
+        ],
+        "problemMatcher": "$tsc"
+      },
+      {
+        "taskName": "test",
+        "suppressTaskName": true,
+        "isTestCommand": true,
+        "args": [
+          "mocha --recursive ./js/tests"
+        ]
+      },
+      {
+        "taskName": "clean",
+        "suppressTaskName": true,
+        "args": [
+          "rm -rf ./js"
+        ]
+      }
+    ]
+  }
+}
