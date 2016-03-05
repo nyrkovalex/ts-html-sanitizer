@@ -1,10 +1,10 @@
 {
   "name": "ts-html-sanitizer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Extendable HTML sanitizer for typescript and JS projects",
   "main": "js/src/sanitizer.js",
   "scripts": {
-     "test": "mocha --require source-map-support/register --recursive ./js/"
+    "test": "mocha --require source-map-support/register --recursive ./js/"
   },
   "typings": "js/src/sanitizer",
   "author": "nyrkovalex@gmail.com",
@@ -21,6 +21,9 @@
     "url": "https://github.com/nyrkovalex/ts-html-sanitizer"
   },
   "keywords": [
-    "sanitize", "html", "sanitizer", "cleanup"
+    "sanitize",
+    "html",
+    "sanitizer",
+    "cleanup"
   ]
 }
