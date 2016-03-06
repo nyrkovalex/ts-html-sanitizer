@@ -1,6 +1,6 @@
 {
   "name": "ts-html-sanitizer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Extendable HTML sanitizer for typescript and JS projects",
   "main": "js/src/sanitizer.js",
   "scripts": {
