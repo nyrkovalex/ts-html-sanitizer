@@ -454,7 +454,13 @@ export const DEFAULT_TAG_MAP: Sanitize.TagMap = {
   'select': SKIPPED,
   'shadow': SKIPPED,
   'small': NO_ATTRS,
-  'source': allowAttributes(['sizes', 'src', 'srcset', 'type', 'media']),
+  'source': chain([
+    allowAttributes(['sizes', 'src', 'srcset', 'type', 'media']),
+    transformAttributes({
+      'src': URL_TRANSFORM
+    }),
+    selfClosingTag(),
+  ]),
   'spacer': SKIPPED,
   'span': NO_ATTRS,
   'strike': chain([

@@ -63,7 +63,7 @@ Interface declares a single `sanitize()` function which takes following argument
 Parsing logic can be greatly altered by creating a new or modifying the default `Sanitize.TagMap`.
 
 All you need to do is register your own function implementing `Transforms.Transform` interface within the tag map.
-Transfomations can be used as middleware functions by utilizing `Transfomrs.chain()` which takes an array of tranformations and runs is bottom up.
+Transfomations can be used as middleware functions by utilizing `Transfomrs.chain()` which takes an array of tranformations and runs is top down.
 
 One may also consider writing custom `Tags.Tag` implmentation.
 
