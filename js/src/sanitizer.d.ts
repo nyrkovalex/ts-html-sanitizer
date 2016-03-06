@@ -16,12 +16,13 @@ export declare namespace Sanitize {
          * hostname of a document source used by link transformer, it will be appended to links starting with `"/"`
          * so `src="/1.png"` will become `src="${sourceHost}/1.png"`. Defaults to empty string
          */
-        sourceHost: string;
+        host: string;
         /**
          * path of a source document, it will be append to realtive links so `href="next.html"`
          * will become `href="${sourceHost}/${sourcePath}/next.html"`. Defaults to empty string
          */
-        sourcePath: string;
+        path: string;
+        protocol: string;
     }
 }
 export declare namespace Attributes {

@@ -1,7 +1,17 @@
 import * as s from '../src/sanitizer';
 import {expect} from 'chai';
 
-const OPTIONS = { sourceHost: '', sourcePath: '' };
+const OPTIONS = {
+  host: '',
+  path: '',
+  protocol: '',
+};
+
+const SAMPLE_OPTIONS = {
+  host: 'nowhere.com',
+  path: '/some-page/',
+  protocol: 'http:',
+};
 
 describe('attribute class', () => {
   it('should create an attribute from name and value', () => {
@@ -125,18 +135,15 @@ describe('transformed tag', () => {
 describe('transformed attribute', () => {
   it('should transform attribute value', () => {
     let tf = s.Transforms.transformAttributes({
-      'href': (a, opts) => s.attribute(a.name, opts.sourceHost + a.value)
+      'href': (a, opts) => s.attribute(a.name, opts.host + a.value)
     });
 
     let result = tf(s.tag('a', [
       s.attribute('href', '/1.png'),
       s.attribute('target', '_blank')
-    ]), {
-        sourceHost: 'http://nowhere.com',
-        sourcePath: '/'
-      });
+    ]), SAMPLE_OPTIONS);
 
-    expect(result.toString()).to.equal('<a href="http://nowhere.com/1.png" target="_blank"></a>');
+    expect(result.toString()).to.equal('<a href="nowhere.com/1.png" target="_blank"></a>');
   });
 });
 
@@ -173,31 +180,22 @@ describe('sample html transformation', () => {
   const EXPECTED = '<section><h1>Awesome page</h1>'
     + '<section><img src="http://nowhere.com/1.jpg" alt="some image" />'
     + '<p> Some <strong>BIG</strong> text <a href="http://nowhere.com" target="_blank" rel="nofollow">here</a><br />'
-    + ' With custom font</p><a href="http://nowhere.com/page/next.html" target="_blank" rel="nofollow">next</a></section></section>';
+    + ' With custom font</p><a href="http://nowhere.com/some-page/next.html" target="_blank" rel="nofollow">next</a></section></section>';
 
   it('should sanitize test input', () => {
-    expect(sanitizer.sanitize(INPUT, {
-      sourceHost: 'http://nowhere.com/',
-      sourcePath: '/page'
-    })).to.equal(EXPECTED);
+    expect(sanitizer.sanitize(INPUT, SAMPLE_OPTIONS)).to.equal(EXPECTED);
   });
 
   it('should handle https urls', () => {
     let input = '<a href="https://nowhere.com">Blah</a>';
-    let result = sanitizer.sanitize(input, {
-      sourceHost: 'http://nowhere.com',
-      sourcePath: '/some-page/'
-    });
+    let result = sanitizer.sanitize(input, SAMPLE_OPTIONS);
 
     expect(result).to.equal('<a href="https://nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
 
   it('should handle mailto: links', () => {
     let input = '<a href="mailto:someone@nowhere.com">Blah</a>';
-    let result = sanitizer.sanitize(input, {
-      sourceHost: 'http://nowhere.com',
-      sourcePath: '/some-page/'
-    });
+    let result = sanitizer.sanitize(input, SAMPLE_OPTIONS);
 
     expect(result).to.equal('<a href="mailto:someone@nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
@@ -206,5 +204,16 @@ describe('sample html transformation', () => {
     let input = '<p>some text with&nbsp;non-breakable space</p>';
     let result = sanitizer.sanitize(input);
     expect(result).to.equal(input);
+  });
+
+  it('should create correct url from //-prefixed path', () => {
+    let input = '<a href="//nowhere.com">Blah</a>';
+    let result = sanitizer.sanitize(input, {
+      host: 'nowhere.com',
+      path: '/some-page/',
+      protocol: 'http:',
+    });
+
+    expect(result).to.equal('<a href="http://nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
 });

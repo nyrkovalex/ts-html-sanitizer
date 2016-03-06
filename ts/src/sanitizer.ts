@@ -23,13 +23,14 @@ export namespace Sanitize {
      * hostname of a document source used by link transformer, it will be appended to links starting with `"/"`
      * so `src="/1.png"` will become `src="${sourceHost}/1.png"`. Defaults to empty string
      */
-    sourceHost: string;
+    host: string;
 
     /**
      * path of a source document, it will be append to realtive links so `href="next.html"`
      * will become `href="${sourceHost}/${sourcePath}/next.html"`. Defaults to empty string
      */
-    sourcePath: string;
+    path: string;
+    protocol: string;
   }
 }
 
@@ -200,10 +201,16 @@ const URL_TRANSFORM: Transforms.AttributeTransform =
     if (a.value.match(/^(https?:\/\/|mailto:)/)) {
       return a;
     }
-    if (a.value.startsWith('/')) {
-      return attribute(a.name, opts.sourceHost + a.value);
+
+    if (a.value.startsWith('//')) {
+      return attribute(a.name, opts.protocol + a.value);
     }
-    return attribute(a.name, opts.sourceHost + opts.sourcePath + a.value);
+
+    let domain = `${opts.protocol}//${opts.host}`;
+    if (a.value.startsWith('/')) {
+      return attribute(a.name, domain + a.value);
+    }
+    return attribute(a.name, domain + opts.path + a.value);
   };
 
 
@@ -219,8 +226,9 @@ const NO_ATTRS = Transforms.NO_ATTRS;
 
 
 const DEFAULT_OPTIONS: Sanitize.Options = {
-  sourceHost: '',
-  sourcePath: '',
+  host: '',
+  path: '',
+  protocol: '',
 };
 
 
@@ -295,14 +303,16 @@ class Htmlparser2Sanitizer implements Sanitize.Sanitizer {
       return DEFAULT_OPTIONS;
     }
 
-    let host = options.sourceHost;
-    let path = options.sourcePath;
+    let host = options.host;
+    let path = options.path;
+    let protocol = options.protocol;
     path = path.startsWith('/') ? path : '/' + path;
     path = path.endsWith('/') ? path : path + '/';
 
     return {
-      sourcePath: path,
-      sourceHost: host.endsWith('/') ? host.substr(0, host.length - 1) : host
+      path: path,
+      host: host.endsWith('/') ? host.substr(0, host.length - 1) : host,
+      protocol: protocol.endsWith('//') ? protocol.substr(0, protocol.length - 2) : protocol
     };
   }
 }
