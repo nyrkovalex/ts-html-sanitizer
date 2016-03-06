@@ -141,7 +141,7 @@ class Htmlparser2Sanitizer {
             onopentag: (name, attrs) => self._openTag(name, attrs),
             ontext: (text) => self._writeText(text),
             onclosetag: (name) => self._closeTag(name)
-        }, { decodeEntities: true });
+        });
     }
     sanitize(input, options) {
         this._tags = [];

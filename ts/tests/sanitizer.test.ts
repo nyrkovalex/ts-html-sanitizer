@@ -201,4 +201,10 @@ describe('sample html transformation', () => {
 
     expect(result).to.equal('<a href="mailto:someone@nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
+
+  it('should retain specials chars', () => {
+    let input = '<p>some text with&nbsp;non-breakable space</p>';
+    let result = sanitizer.sanitize(input);
+    expect(result).to.equal(input);
+  });
 });

@@ -237,7 +237,7 @@ class Htmlparser2Sanitizer implements Sanitize.Sanitizer {
       onopentag: (name: string, attrs: any) => self._openTag(name, attrs),
       ontext: (text: string) => self._writeText(text),
       onclosetag: (name) => self._closeTag(name)
-    }, { decodeEntities: true });
+    });
   }
 
   sanitize(input: string, options?: Sanitize.Options): string {
