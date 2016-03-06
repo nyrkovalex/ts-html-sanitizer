@@ -4,7 +4,7 @@
   "description": "Extendable HTML sanitizer for typescript and JS projects",
   "main": "js/src/sanitizer.js",
   "scripts": {
-    "test": "mocha --require source-map-support/register --recursive ./js/"
+    "test": "mocha --require source-map-support/register --recursive ./js/tests"
   },
   "typings": "js/src/sanitizer",
   "author": "nyrkovalex@gmail.com",

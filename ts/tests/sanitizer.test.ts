@@ -1,124 +1,147 @@
 import * as s from '../src/sanitizer';
 import {expect} from 'chai';
 
-describe('sanitizer tests', () => {
-  describe('attribute class', () => {
-    it('should create an attribute from name and value', () => {
-      let a = s.attribute('href', 'http://nowhere.com');
-      expect(a.toString()).to.equal('href="http://nowhere.com"');
-    });
+const OPTIONS =  { sourceHost: '', sourcePath: ''};
+
+describe('attribute class', () => {
+  it('should create an attribute from name and value', () => {
+    let a = s.attribute('href', 'http://nowhere.com');
+    expect(a.toString()).to.equal('href="http://nowhere.com"');
+  });
+});
+
+describe('basic tag', () => {
+  it('should create a tag from name and attributes', () => {
+    let attrs = [
+      s.attribute('href', 'http://nowhere.com'),
+      s.attribute('target', '_blank')
+    ];
+
+    let t = new s.Tags.Basic('a', attrs);
+    t.writeText('Link text');
+
+    expect(t.toString()).to.equal(
+      '<a href="http://nowhere.com" target="_blank">Link text</a>');
+  });
+});
+
+describe('skipped tag', () => {
+  it('should always be an empty string', () => {
+    let attrs = [
+      s.attribute('href', 'http://nowhere.com'),
+      s.attribute('target', '_blank')
+    ];
+
+    let t = new s.Tags.Skipped('a', attrs);
+    t.writeText('Link text');
+
+    expect(t.toString()).to.equal('');
+  });
+});
+
+describe('restricted tag', () => {
+  it('should not allow certain attributes', () => {
+    let attrs = [
+      s.attribute('href', 'http://nowhere.com'),
+      s.attribute('target', '_blank')
+    ];
+
+    let t = s.Transforms.restrcitedTag(['href'])(s.tag('a', attrs), OPTIONS);
+    t.writeText('Link text');
+
+    expect(t.toString()).to.equal('<a href="http://nowhere.com">Link text</a>');
   });
 
-  describe('basic tag', () => {
-    it('should create a tag from name and attributes', () => {
-      let attrs = [
-        s.attribute('href', 'http://nowhere.com'),
-        s.attribute('target', '_blank')
-      ];
+  it('should create a self-closing tag from name and attributes', () => {
+    let attrs = [
+      s.attribute('src', 'http://nowhere.com/1.png'),
+      s.attribute('alt', 'image')
+    ];
 
-      let t = s.basicTag()('a', attrs);
-      t.writeText('Link text');
+    let t = s.Transforms.chain([
+      s.Transforms.restrcitedTag(['src']),
+      s.Transforms.selfClosingTag(),
+    ])(s.tag('img', attrs), OPTIONS);
+    t.writeText('Link text'); // should have no effect
 
-      expect(t.toString()).to.equal(
-        '<a href="http://nowhere.com" target="_blank">Link text</a>');
-    });
+    expect(t.toString()).to.equal('<img src="http://nowhere.com/1.png" />');
   });
+});
 
-  describe('skipped tag', () => {
-    it('should always be an empty string', () => {
-      let attrs = [
-        s.attribute('href', 'http://nowhere.com'),
-        s.attribute('target', '_blank')
-      ];
+describe('self-closing tag', () => {
+  it('should create a tag from name and attributes', () => {
+    let attrs = [
+      s.attribute('src', 'http://nowhere.com/1.png'),
+      s.attribute('alt', 'image')
+    ];
 
-      let t = s.skippedTag()('a', attrs);
-      t.writeText('Link text');
+    let t = new s.Tags.SelfClosing('img', attrs);
+    t.writeText('Link text'); // should have no effect
 
-      expect(t.toString()).to.equal('');
-    });
+    expect(t.toString()).to.equal('<img src="http://nowhere.com/1.png" alt="image" />');
   });
+});
 
-  describe('restricted tag', () => {
-    it('should not allow certain attributes', () => {
-      let attrs = [
-        s.attribute('href', 'http://nowhere.com'),
-        s.attribute('target', '_blank')
-      ];
+describe('stripped tag', () => {
+  it('should retian only text', () => {
+    let attrs = [
+      s.attribute('href', 'http://nowhere.com'),
+      s.attribute('target', '_blank')
+    ];
 
-      let t = s.restrcitedTag(s.basicTag(), ['href'])('a', attrs);
-      t.writeText('Link text');
+    let t = new s.Tags.Stripped('a', attrs);
+    t.writeText('Link text');
 
-      expect(t.toString()).to.equal('<a href="http://nowhere.com">Link text</a>');
-    });
-
-    it('should create a self-closing tag from name and attributes', () => {
-      let attrs = [
-        s.attribute('src', 'http://nowhere.com/1.png'),
-        s.attribute('alt', 'image')
-      ];
-
-      let t = s.restrcitedTag(s.selfClosingTag(), ['src'])('img', attrs);
-      t.writeText('Link text'); // should have no effect
-
-      expect(t.toString()).to.equal('<img src="http://nowhere.com/1.png" />');
-    });
+    expect(t.toString()).to.equal(
+      'Link text');
   });
+});
 
-  describe('self-closing tag', () => {
-    it('should create a tag from name and attributes', () => {
-      let attrs = [
-        s.attribute('src', 'http://nowhere.com/1.png'),
-        s.attribute('alt', 'image')
-      ];
+describe('defaultAttrs', () => {
+  it('should create a tagwith default attrs', () => {
+    let attrs = [
+      s.attribute('href', 'http://nowhere.com'),
+      s.attribute('target', '_blank')
+    ];
 
-      let t = s.selfClosingTag()('img', attrs);
-      t.writeText('Link text'); // should have no effect
+    let t = s.Transforms.defaultAttrs([
+      s.attribute('rel', 'nofollow')
+    ])(s.tag('a', attrs), OPTIONS);
 
-      expect(t.toString()).to.equal('<img src="http://nowhere.com/1.png" alt="image" />');
-    });
+    t.writeText('Link text');
+
+    expect(t.toString()).to.equal(
+      '<a href="http://nowhere.com" target="_blank" rel="nofollow">Link text</a>');
   });
+});
 
-  describe('stripped tag', () => {
-    it('should retian only text', () => {
-      let attrs = [
-        s.attribute('href', 'http://nowhere.com'),
-        s.attribute('target', '_blank')
-      ];
-
-      let t = s.strippedTag()('a', attrs);
-      t.writeText('Link text');
-
-      expect(t.toString()).to.equal(
-        'Link text');
-    });
+describe('transformed tag', () => {
+  it('should transform passed tag', () => {
+    let tf = s.Transforms.transformTag('strong');
+    expect(tf(s.tag('b', []), OPTIONS).toString()).to.equal('<strong></strong>');
   });
+});
 
-  describe('defaultAttrs', () => {
-    it('should create a tagwith default attrs', () => {
-      let attrs = [
-        s.attribute('href', 'http://nowhere.com'),
-        s.attribute('target', '_blank')
-      ];
-
-      let t = s.defaultAttrs(s.basicTag(), [
-        s.attribute('rel', 'nofollow')
-      ])('a', attrs);
-      t.writeText('Link text');
-
-      expect(t.toString()).to.equal(
-        '<a href="http://nowhere.com" target="_blank" rel="nofollow">Link text</a>');
+describe('transformed attribute', () => {
+  it('should transform attribute value', () => {
+    let tf = s.Transforms.transformAttributes({
+      'href': (a, opts) => s.attribute(a.name, opts.sourceHost + a.value)
     });
-  });
 
-  describe('transformed tag', () => {
-    it('should transform passed tag', () => {
-      let tf = s.transformedTag(s.basicTag(), 'strong');
-      expect(tf('b', []).toString()).to.equal('<strong></strong>');
-    });
-  });
+    let result = tf(s.tag('a', [
+      s.attribute('href', '/1.png'),
+      s.attribute('target', '_blank')
+    ]), {
+        sourceHost: 'http://nowhere.com',
+        sourcePath: '/'
+      });
 
-  describe('sample html transformation', () => {
-    const INPUT = `
+    expect(result.toString()).to.equal('<a href="http://nowhere.com/1.png" target="_blank"></a>');
+  });
+});
+
+describe('sample html transformation', () => {
+  const INPUT = `
       <html>
         <head>
           <title>Something</title>
@@ -133,9 +156,10 @@ describe('sanitizer tests', () => {
             <section style="width: 600px">
               <img src="/1.jpg" alt="some image">
               <P>
-                Some <big>BIG</big> text <a href="/boom">here</a>
+                Some <big>BIG</big> text <a href="http://nowhere.com">here</a><br>
                 With custom <font>font</font>
               </P>
+              <a href="next.html">next</a>
             </section>
           </main>
           <script>
@@ -145,14 +169,16 @@ describe('sanitizer tests', () => {
       </html>
     `;
 
-    const EXPECTED = '<section><h1>Awesome page</h1>'
-      +'<section><img src="/1.jpg" alt="some image" />'
-      +'<p> Some <strong>BIG</strong> text <a href="/boom" target="_blank" rel="nofollow">here</a>'
-      +' With custom font</p></section></section>';
+  const EXPECTED = '<section><h1>Awesome page</h1>'
+    + '<section><img src="http://nowhere.com/1.jpg" alt="some image" />'
+    + '<p> Some <strong>BIG</strong> text <a href="http://nowhere.com" target="_blank" rel="nofollow">here</a><br />'
+    + ' With custom font</p><a href="http://nowhere.com/page/next.html" target="_blank" rel="nofollow">next</a></section></section>';
 
-    it('should sanitize test input', () => {
-      let sanitizer = s.sanitizer(s.DEFAULT_TAG_MAP);
-      expect(sanitizer.sanitize(INPUT)).to.equal(EXPECTED);
-    });
+  it('should sanitize test input', () => {
+    let sanitizer = s.sanitizer();
+    expect(sanitizer.sanitize(INPUT, {
+      sourceHost: 'http://nowhere.com/',
+      sourcePath: '/page'
+    })).to.equal(EXPECTED);
   });
 });

@@ -64,7 +64,7 @@
         "suppressTaskName": true,
         "isTestCommand": true,
         "args": [
-          "mocha --recursive ./js/tests"
+          "npm test"
         ]
       },
       {
