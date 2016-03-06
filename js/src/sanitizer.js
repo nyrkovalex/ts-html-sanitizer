@@ -111,7 +111,7 @@ var Transforms;
     Transforms.transformAttributes = transformAttributes;
 })(Transforms = exports.Transforms || (exports.Transforms = {}));
 const URL_TRANSFORM = (a, opts) => {
-    if (a.value.match(/^https?:\/\//)) {
+    if (a.value.match(/^(https?:\/\/|mailto:)/)) {
         return a;
     }
     if (a.value.startsWith('/')) {

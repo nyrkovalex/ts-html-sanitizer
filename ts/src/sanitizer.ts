@@ -197,7 +197,7 @@ export namespace Transforms {
 
 const URL_TRANSFORM: Transforms.AttributeTransform =
   (a: Attributes.Attribute, opts: Sanitize.Options) => {
-    if (a.value.match(/^https?:\/\//)) {
+    if (a.value.match(/^(https?:\/\/|mailto:)/)) {
       return a;
     }
     if (a.value.startsWith('/')) {

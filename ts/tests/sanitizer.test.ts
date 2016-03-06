@@ -1,7 +1,7 @@
 import * as s from '../src/sanitizer';
 import {expect} from 'chai';
 
-const OPTIONS =  { sourceHost: '', sourcePath: ''};
+const OPTIONS = { sourceHost: '', sourcePath: '' };
 
 describe('attribute class', () => {
   it('should create an attribute from name and value', () => {
@@ -166,8 +166,9 @@ describe('sample html transformation', () => {
             alert('malicious script');
           </script>
         </body>
-      </html>
-    `;
+      </html>`;
+
+  let sanitizer = s.sanitizer();
 
   const EXPECTED = '<section><h1>Awesome page</h1>'
     + '<section><img src="http://nowhere.com/1.jpg" alt="some image" />'
@@ -175,10 +176,29 @@ describe('sample html transformation', () => {
     + ' With custom font</p><a href="http://nowhere.com/page/next.html" target="_blank" rel="nofollow">next</a></section></section>';
 
   it('should sanitize test input', () => {
-    let sanitizer = s.sanitizer();
     expect(sanitizer.sanitize(INPUT, {
       sourceHost: 'http://nowhere.com/',
       sourcePath: '/page'
     })).to.equal(EXPECTED);
+  });
+
+  it('should handle https urls', () => {
+    let input = '<a href="https://nowhere.com">Blah</a>';
+    let result = sanitizer.sanitize(input, {
+      sourceHost: 'http://nowhere.com',
+      sourcePath: '/some-page/'
+    });
+
+    expect(result).to.equal('<a href="https://nowhere.com" target="_blank" rel="nofollow">Blah</a>');
+  });
+
+  it('should handle mailto: links', () => {
+    let input = '<a href="mailto:someone@nowhere.com">Blah</a>';
+    let result = sanitizer.sanitize(input, {
+      sourceHost: 'http://nowhere.com',
+      sourcePath: '/some-page/'
+    });
+
+    expect(result).to.equal('<a href="mailto:someone@nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
 });
