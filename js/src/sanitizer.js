@@ -156,6 +156,7 @@ class Htmlparser2Sanitizer {
         let text = this._rootText.join('');
         this._rootText = [];
         this._options = null;
+        this._current = null;
         this._tags = [];
         return text;
     }
@@ -164,6 +165,7 @@ class Htmlparser2Sanitizer {
         if (!tagFactory) {
             return;
         }
+        console.info('starting tag', name);
         let convertedAttrs = Object.keys(attrs).map(attrName => attribute(attrName, attrs[attrName]));
         this._current = tagFactory(new Tags.Basic(name, convertedAttrs), this._options);
         this._tags.push(this._current);
@@ -172,6 +174,7 @@ class Htmlparser2Sanitizer {
         if (!text.trim()) {
             return;
         }
+        console.info('writin', text);
         text = text.replace(/\s+/, ' ');
         if (!this._current) {
             this._rootText.push(text);
@@ -181,8 +184,10 @@ class Htmlparser2Sanitizer {
     }
     _closeTag(name) {
         let previousText = this._tags.pop().toString();
+        console.info('closing tag', name);
         if (this._tags.length === 0) {
             this._rootText.push(previousText);
+            this._current = null;
             return;
         }
         this._current = this._tags[this._tags.length - 1];

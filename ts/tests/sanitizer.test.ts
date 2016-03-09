@@ -216,4 +216,10 @@ describe('sample html transformation', () => {
 
     expect(result).to.equal('<a href="http://nowhere.com" target="_blank" rel="nofollow">Blah</a>');
   });
+
+  it('should handle plain text', () => {
+    let input = 'В следующем месяце планируется выпустить <i>RTM</i>, поэтому далее под катом разбор некоторых нововведений, которые будут доступны в рамках новой версии: отличия в установке, дефолтные трейс-флаги, новые функции и <b>киллер-фича</b> для анализа плана выполнения';
+    let result = sanitizer.sanitize(input);
+    expect(result).to.equal(input);
+  });
 });

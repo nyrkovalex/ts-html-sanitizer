@@ -258,6 +258,7 @@ class Htmlparser2Sanitizer implements Sanitize.Sanitizer {
 
     this._rootText = [];
     this._options = null;
+    this._current = null;
     this._tags = [];
     return text;
   }
@@ -292,6 +293,7 @@ class Htmlparser2Sanitizer implements Sanitize.Sanitizer {
     let previousText = this._tags.pop().toString();
     if (this._tags.length === 0) {
       this._rootText.push(previousText);
+      this._current = null;
       return;
     }
     this._current = this._tags[this._tags.length - 1];
